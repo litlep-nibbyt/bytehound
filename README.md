@@ -74,6 +74,21 @@
 
 Then open your Web browser and point it at `http://localhost:8080` to access the GUI.
 
+### Headless server (view UI on your Mac via SSH)
+
+Run the profiler and UI on the server, then tunnel to it from your Mac:
+
+Server:
+
+    $ LD_PRELOAD=./libbytehound.so ./your_application
+    $ ./bytehound server --bind 127.0.0.1 memory-profiling_*.dat
+
+Mac:
+
+    $ ssh -L 8080:127.0.0.1:8080 user@server
+
+Then open `http://localhost:8080` in your browser.
+
 ## Documentation
 
 You can find the full documentation for the profiler in our [Memory profiling for fun and profit](https://koute.github.io/bytehound/) book.
