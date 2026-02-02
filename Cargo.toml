@@ -11,3 +11,6 @@ opt-level = 3
 lto = true
 panic = "abort"
 debug = true
+
+[patch.crates-io]
+version_check = { path = "vendor/version_check" }

@@ -17,10 +17,10 @@ futures = "0.1"
 serde_urlencoded = "0.5"
 regex = "1"
 bytes = "0.4"
-lru = "0.6"
+lru = "0.16.3"
 parking_lot = "0.12"
 common = { path = "../common" }
-ahash = "0.7"
+ahash = "0.8.12"
 rayon = "1"
 md5 = "0.7"
 

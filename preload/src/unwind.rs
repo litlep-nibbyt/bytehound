@@ -1,4 +1,5 @@
 use std::mem::{self, transmute};
+use std::num::NonZeroUsize;
 use std::sync::atomic::{AtomicU64, AtomicUsize};
 use libc::{self, c_void, c_int, uintptr_t};
 use perf_event_open::{Perf, EventSource, Event};
@@ -132,9 +133,16 @@ impl ThreadUnwindState {
             last_dl_state: (0, 0),
             current_backtrace: Vec::new(),
             buffer: Vec::new(),
-            cache: lru::LruCache::with_hasher( crate::opt::get().backtrace_cache_size_level_1, NoHash )
+            cache: lru::LruCache::with_hasher(
+                nonzero_or_one( crate::opt::get().backtrace_cache_size_level_1 ),
+                NoHash
+            )
         }
     }
+}
+
+fn nonzero_or_one( size: usize ) -> NonZeroUsize {
+    NonZeroUsize::new( size ).unwrap_or_else( || NonZeroUsize::new( 1 ).unwrap() )
 }
 
 type Context = *mut c_void;
