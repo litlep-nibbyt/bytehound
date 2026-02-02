@@ -182,7 +182,7 @@ pub fn sync() {
     try_sync_processing_thread_destruction();
 }
 
-pub extern fn on_exit() {
+pub extern "C" fn on_exit() {
     if STATE.load( Ordering::SeqCst ) == STATE_PERMANENTLY_DISABLED {
         return;
     }
@@ -203,7 +203,7 @@ pub extern fn on_exit() {
     info!( "Exit hook finished" );
 }
 
-pub unsafe extern fn on_fork() {
+pub unsafe extern "C" fn on_fork() {
     STATE.store( STATE_PERMANENTLY_DISABLED, Ordering::SeqCst );
     DESIRED_STATE.store( DESIRED_STATE_DISABLED, Ordering::SeqCst );
     THREAD_RUNNING.store( false, Ordering::SeqCst );

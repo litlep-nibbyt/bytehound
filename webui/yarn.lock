@@ -1175,6 +1175,11 @@
   resolved "https://registry.yarnpkg.com/@parcel/css-linux-arm64-gnu/-/css-linux-arm64-gnu-1.10.0.tgz#7229d05f1f9f76443eb4c9bc55a9e8887c0822dd"
   integrity sha512-x8XEtJxgJlstAwbg1BLeYuXhUXEOxGg/BeBFPZr8Zk8dNQ1j1jR7LBk12IKgZrvr+Px1WOFY65lwabgCyFqxnQ==
 
+"@parcel/css-linux-arm64-gnu@^1.13.1":
+  version "1.13.1"
+  resolved "https://registry.yarnpkg.com/@parcel/css-linux-arm64-gnu/-/css-linux-arm64-gnu-1.13.1.tgz#fa4c43564b6bfc5434ab779cbef58de7b1228994"
+  integrity sha512-FxnOONVo8WBW58uzjqv/mwSBDgGMp1qxK+fovjqLPCP3zcNgxkUG0l6ElWpqtiWWH3mTMzSHe+7hSaeVov12yQ==
+
 "@parcel/css-linux-arm64-musl@1.10.0":
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/@parcel/css-linux-arm64-musl/-/css-linux-arm64-musl-1.10.0.tgz#d8efb7c09f53971db01ea180a5b63a1b908f1800"

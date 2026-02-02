@@ -439,7 +439,7 @@ impl BacktraceCache {
         match self.cache.get_mut( &key ) {
             None => {
                 if cfg!( debug_assertions ) {
-                    if self.cache.len() >= self.cache.cap() {
+                    if self.cache.len() >= self.cache.cap().get() {
                         debug!( "2nd level backtrace cache overflow" );
                     }
                 }

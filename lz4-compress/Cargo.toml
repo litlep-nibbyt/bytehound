@@ -2,6 +2,7 @@
 name = "lz4-compress"
 version = "0.1.1"
 authors = ["ticki <Ticki@users.noreply.github.com>"]
+edition = "2018"
 description = "Pure Rust implementation of raw LZ4 compression/decompression."
 repository = "https://github.com/ticki/tfs"
 documentation = "https://docs.rs/lz4-compress"

@@ -586,7 +586,7 @@ dependencies = [
  "perf_event_open",
  "sc",
  "smallvec 1.9.0",
- "thread-local-reentrant 0.1.0 (git+https://github.com/koute/not-perf.git?rev=911723c)",
+ "thread-local-reentrant",
  "tikv-jemalloc-sys 0.4.2+5.2.1-patched.2",
 ]
 
@@ -1796,6 +1796,7 @@ dependencies = [
 [[package]]
 name = "nwind"
 version = "0.1.0"
+source = "git+https://github.com/litlep-nibbyt/not-perf?rev=8117c91#8117c91cbe81d7726d2279ac83c9c812028460a2"
 dependencies = [
  "addr2line 0.16.0",
  "byteorder",
@@ -1811,7 +1812,7 @@ dependencies = [
  "rustc-demangle",
  "scroll",
  "speedy",
- "thread-local-reentrant 0.1.0",
+ "thread-local-reentrant",
 ]
 
 [[package]]
@@ -1929,7 +1930,7 @@ checksum = "d4fd5641d01c8f18a23da7b6fe29298ff4b55afcccdf78973b24cf3175fee32e"
 [[package]]
 name = "perf_event_open"
 version = "0.1.0"
-source = "git+https://github.com/koute/not-perf.git?rev=911723c#911723cf9099cc0f9e45b921f045117535cd1f06"
+source = "git+https://github.com/litlep-nibbyt/not-perf?rev=8117c91#8117c91cbe81d7726d2279ac83c9c812028460a2"
 dependencies = [
  "byteorder",
  "libc",
@@ -2054,6 +2055,7 @@ dependencies = [
 [[package]]
 name = "proc-maps"
 version = "0.1.0"
+source = "git+https://github.com/litlep-nibbyt/not-perf?rev=8117c91#8117c91cbe81d7726d2279ac83c9c812028460a2"
 
 [[package]]
 name = "quick-error"
@@ -2839,14 +2841,7 @@ checksum = "144f754d318415ac792f9d69fc87abbbfc043ce2ef041c60f16ad828f638717d"
 [[package]]
 name = "thread-local-reentrant"
 version = "0.1.0"
-dependencies = [
- "libc",
-]
-
-[[package]]
-name = "thread-local-reentrant"
-version = "0.1.0"
-source = "git+https://github.com/koute/not-perf.git?rev=911723c#911723cf9099cc0f9e45b921f045117535cd1f06"
+source = "git+https://github.com/litlep-nibbyt/not-perf?rev=8117c91#8117c91cbe81d7726d2279ac83c9c812028460a2"
 dependencies = [
  "libc",
 ]
@@ -3184,7 +3179,9 @@ checksum = "f1bddf1187be692e79c5ffeab891132dfb0f236ed36a43c7ed39f1165ee20191"
 
 [[package]]
 name = "version_check"
-version = "0.9.4"
+version = "0.9.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
 name = "walkdir"

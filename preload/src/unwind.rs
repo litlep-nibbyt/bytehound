@@ -311,7 +311,7 @@ fn reload_if_necessary_dl_iterate_phdr( last_state: &mut (u64, u64) ) -> RwLockR
 }
 
 fn get_dl_state() -> (u64, u64) {
-    unsafe extern fn callback( info: *mut libc::dl_phdr_info, _: libc::size_t, data: *mut libc::c_void ) -> libc::c_int {
+    unsafe extern "C" fn callback( info: *mut libc::dl_phdr_info, _: libc::size_t, data: *mut libc::c_void ) -> libc::c_int {
         let out = &mut *(data as *mut (u64, u64));
         out.0 = (*info).dlpi_adds;
         out.1 = (*info).dlpi_subs;
@@ -446,7 +446,7 @@ fn grab_with_unwind_state( unwind_state: &mut ThreadUnwindState ) -> Backtrace {
     let backtrace = match unwind_state.cache.get_mut( &key ) {
         None => {
             if cfg!( debug_assertions ) {
-                if unwind_state.cache.len() >= unwind_state.cache.cap() {
+                if unwind_state.cache.len() >= unwind_state.cache.cap().get() {
                     debug!( "1st level backtrace cache overflow" );
                 }
             }
