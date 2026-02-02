@@ -62,7 +62,7 @@
 
 - Recent nightly toolchains removed the `stdsimd` feature gate; older `ahash` build scripts can still try to enable `stdsimd`/`specialize`, which can fail with `unknown feature stdsimd`.
   Prefer bumping `ahash` to a newer 0.8.x release that no longer emits those cfgs.
-- This repo includes a conservative `version_check` patch in `vendor/version_check` (wired via `[patch.crates-io]` in `Cargo.toml`) to avoid auto-enabling removed feature gates on newer toolchains.
+- This repo uses the crates.io `version_check` crate. If you hit feature-gate errors on newer nightlies, consider updating dependencies (notably `ahash`) or using a toolchain that matches the repo's expectations.
 
 ## Usage
 
