@@ -1,4 +1,4 @@
-use crate::utils::Buffer;
+use crate::utils::{Buffer, UnsafeCellSync};
 
 pub struct Opts {
     is_initialized: bool,
@@ -27,7 +27,7 @@ pub struct Opts {
     pub disable_pr_set_vma_anon_name: bool,
 }
 
-static mut OPTS: Opts = Opts {
+static OPTS: UnsafeCellSync< Opts > = UnsafeCellSync::new( Opts {
     is_initialized: false,
 
     base_server_port: 8100,
@@ -52,7 +52,7 @@ static mut OPTS: Opts = Opts {
     temporary_allocation_pending_threshold: None,
     track_child_processes: false,
     disable_pr_set_vma_anon_name: false,
-};
+} );
 
 trait ParseVar: Sized {
     fn parse_var( value: Buffer ) -> Option< Self >;
@@ -121,7 +121,7 @@ macro_rules! opts {
 pub unsafe fn initialize() {
     info!( "Options:" );
 
-    let opts = &mut OPTS;
+    let opts = &mut *OPTS.get();
     opts! {
         "MEMORY_PROFILER_BASE_SERVER_PORT"          => &mut opts.base_server_port,
         "MEMORY_PROFILER_CHOWN_OUTPUT_TO"           => &mut opts.chown_output_to,
@@ -159,7 +159,7 @@ pub unsafe fn initialize() {
 
 #[inline]
 pub fn is_initialized() -> bool {
-    unsafe { OPTS.is_initialized }
+    unsafe { (*OPTS.get()).is_initialized }
 }
 
 #[inline(never)]
@@ -173,7 +173,7 @@ fn crash() {
 
 #[inline]
 pub fn get() -> &'static Opts {
-    let opts = unsafe { &OPTS };
+    let opts = unsafe { &*OPTS.get() };
     if !opts.is_initialized {
         crash();
     }

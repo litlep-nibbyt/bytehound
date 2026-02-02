@@ -13,6 +13,7 @@ use crate::unwind::Backtrace;
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 #[repr(u8)]
+#[allow(dead_code)]
 pub enum MapKind {
     Mmap = 0,
     Jemalloc = 1,

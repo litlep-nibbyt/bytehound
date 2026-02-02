@@ -24,6 +24,8 @@
   Pyry Haulos <pyry.haulos@gmail.com>
 */
 
+#![allow(dead_code)]
+
 use libc::{c_char, c_void, size_t};
 use std::ops::ControlFlow;
 use std::ffi::CStr;
