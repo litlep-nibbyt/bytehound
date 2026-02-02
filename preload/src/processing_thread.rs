@@ -1,5 +1,6 @@
 use std::hash::Hash;
 use std::mem;
+use std::num::NonZeroUsize;
 use std::fs::{self, File, remove_file};
 use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
 use std::net::{TcpListener, TcpStream, UdpSocket, IpAddr, SocketAddr};
@@ -424,7 +425,7 @@ impl BacktraceCache {
     pub fn new( cache_size: usize ) -> Self {
         BacktraceCache {
             next_id: 1,
-            cache: lru::LruCache::with_hasher( cache_size, NoHash )
+            cache: lru::LruCache::with_hasher( nonzero_or_one( cache_size ), NoHash )
         }
     }
 
@@ -438,7 +439,7 @@ impl BacktraceCache {
         match self.cache.get_mut( &key ) {
             None => {
                 if cfg!( debug_assertions ) {
-                    if self.cache.len() >= self.cache.cap() {
+                    if self.cache.len() >= self.cache.cap().get() {
                         debug!( "2nd level backtrace cache overflow" );
                     }
                 }
@@ -467,6 +468,10 @@ impl BacktraceCache {
             }
         }
     }
+}
+
+fn nonzero_or_one( size: usize ) -> NonZeroUsize {
+    NonZeroUsize::new( size ).unwrap_or_else( || NonZeroUsize::new( 1 ).unwrap() )
 }
 
 fn emit_allocation_bucket( mut bucket: AllocationBucket, backtrace_cache: &mut BacktraceCache, fp: &mut impl Write ) -> Result< (), std::io::Error > {

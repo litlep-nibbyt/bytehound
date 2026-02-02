@@ -68,14 +68,14 @@ pub fn initialize_signal_handlers() {
     if opt::get().register_sigusr1 {
         info!( "Registering SIGUSR1 handler..." );
         unsafe {
-            libc::signal( libc::SIGUSR1, sigusr_handler as libc::sighandler_t );
+            libc::signal( libc::SIGUSR1, sigusr_handler as *const () as libc::sighandler_t );
         }
     }
 
     if opt::get().register_sigusr2 {
         info!( "Registering SIGUSR2 handler..." );
         unsafe {
-            libc::signal( libc::SIGUSR2, sigusr_handler as libc::sighandler_t );
+            libc::signal( libc::SIGUSR2, sigusr_handler as *const () as libc::sighandler_t );
         }
     }
 }

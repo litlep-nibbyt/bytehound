@@ -21,14 +21,14 @@ impl< T > SpinLock< T > {
         }
     }
 
-    pub fn lock( &self ) -> SpinLockGuard< T > {
+    pub fn lock( &self ) -> SpinLockGuard<'_,  T > {
         while self.flag.compare_exchange_weak( false, true, Ordering::Acquire, Ordering::Acquire ).is_err() {
         }
 
         SpinLockGuard( self )
     }
 
-    pub fn try_lock( &self ) -> Option< SpinLockGuard< T > > {
+    pub fn try_lock( &self ) -> Option< SpinLockGuard<'_,  T > > {
         if self.flag.compare_exchange( false, true, Ordering::Acquire, Ordering::Acquire ).is_ok() {
             Some( SpinLockGuard( self ) )
         } else {

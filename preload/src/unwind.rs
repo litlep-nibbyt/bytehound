@@ -1,4 +1,5 @@
 use std::mem::{self, transmute};
+use std::num::NonZeroUsize;
 use std::sync::atomic::{AtomicU64, AtomicUsize};
 use libc::{self, c_void, c_int, uintptr_t};
 use perf_event_open::{Perf, EventSource, Event};
@@ -132,9 +133,16 @@ impl ThreadUnwindState {
             last_dl_state: (0, 0),
             current_backtrace: Vec::new(),
             buffer: Vec::new(),
-            cache: lru::LruCache::with_hasher( crate::opt::get().backtrace_cache_size_level_1, NoHash )
+            cache: lru::LruCache::with_hasher(
+                nonzero_or_one( crate::opt::get().backtrace_cache_size_level_1 ),
+                NoHash
+            )
         }
     }
+}
+
+fn nonzero_or_one( size: usize ) -> NonZeroUsize {
+    NonZeroUsize::new( size ).unwrap_or_else( || NonZeroUsize::new( 1 ).unwrap() )
 }
 
 type Context = *mut c_void;
@@ -303,7 +311,7 @@ fn reload_if_necessary_dl_iterate_phdr( last_state: &mut (u64, u64) ) -> RwLockR
 }
 
 fn get_dl_state() -> (u64, u64) {
-    unsafe extern fn callback( info: *mut libc::dl_phdr_info, _: libc::size_t, data: *mut libc::c_void ) -> libc::c_int {
+    unsafe extern "C" fn callback( info: *mut libc::dl_phdr_info, _: libc::size_t, data: *mut libc::c_void ) -> libc::c_int {
         let out = &mut *(data as *mut (u64, u64));
         out.0 = (*info).dlpi_adds;
         out.1 = (*info).dlpi_subs;
@@ -438,7 +446,7 @@ fn grab_with_unwind_state( unwind_state: &mut ThreadUnwindState ) -> Backtrace {
     let backtrace = match unwind_state.cache.get_mut( &key ) {
         None => {
             if cfg!( debug_assertions ) {
-                if unwind_state.cache.len() >= unwind_state.cache.cap() {
+                if unwind_state.cache.len() >= unwind_state.cache.cap().get() {
                     debug!( "1st level backtrace cache overflow" );
                 }
             }

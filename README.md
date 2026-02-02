@@ -52,6 +52,18 @@
 
 3. Grab the binaries from `target/release/libbytehound.so` and `target/release/bytehound`
 
+### Build notes (newer nightlies / GCC 15+)
+
+- If `cc` is missing, install `build-essential` (or your distro's equivalent).
+- `mimalloc` can fail under newer GCC defaults (C23) with `ATOMIC_VAR_INIT` errors; build with `CFLAGS='-std=gnu11'`, e.g.:
+
+        $ CFLAGS='-std=gnu11' cargo build --release -p bytehound-preload
+        $ CFLAGS='-std=gnu11' cargo build --release -p bytehound-cli
+
+- Recent nightly toolchains removed the `stdsimd` feature gate; older `ahash` build scripts can still try to enable `stdsimd`/`specialize`, which can fail with `unknown feature stdsimd`.
+  Prefer bumping `ahash` to a newer 0.8.x release that no longer emits those cfgs.
+- This repo includes a conservative `version_check` patch in `vendor/version_check` (wired via `[patch.crates-io]` in `Cargo.toml`) to avoid auto-enabling removed feature gates on newer toolchains.
+
 ## Usage
 
 ### Basic usage

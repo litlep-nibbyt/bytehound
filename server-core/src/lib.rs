@@ -13,6 +13,7 @@ use std::io;
 use std::borrow::Cow;
 use std::cmp::{min, max};
 use std::path::PathBuf;
+use std::num::NonZeroUsize;
 use std::time::Instant;
 
 use actix_web::{
@@ -190,7 +191,7 @@ impl State {
         State {
             data: HashMap::new(),
             data_ids: Vec::new(),
-            allocation_group_cache: Mutex::new( LruCache::new( 4 ) ),
+            allocation_group_cache: Mutex::new( LruCache::new( NonZeroUsize::new( 4 ).unwrap() ) ),
             generated_files: Default::default(),
         }
     }
