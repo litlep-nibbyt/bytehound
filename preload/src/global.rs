@@ -352,7 +352,7 @@ fn find_internal_syms< const N: usize >( names: &[&str; N] ) -> [usize; N] {
             );
 
             for sym in syms {
-                if sym.st_shndx == SHN_UNDEF as usize || sym.st_value == 0 {
+                if sym.st_shndx == SHN_UNDEF as u16 || sym.st_value == 0 {
                     continue;
                 }
 
