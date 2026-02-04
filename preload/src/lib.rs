@@ -71,9 +71,6 @@ pub use crate::api::{
     bytehound_mimalloc_raw_munmap,
     bytehound_mimalloc_raw_mprotect,
 
-    __register_frame,
-    __deregister_frame,
-
     _exit,
     _Exit,
     fork,
@@ -99,4 +96,10 @@ pub use crate::api::{
     memory_profiler_start,
     memory_profiler_stop,
     memory_profiler_sync
+};
+
+#[cfg(not(feature = "disable-register-frame-hooks"))]
+pub use crate::api::{
+    __register_frame,
+    __deregister_frame,
 };

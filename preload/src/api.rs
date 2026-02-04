@@ -1097,6 +1097,7 @@ pub unsafe extern "C" fn memory_profiler_sync() {
 }
 
 #[cfg_attr(not(test), no_mangle)]
+#[cfg(not(feature = "disable-register-frame-hooks"))]
 pub unsafe extern "C" fn __register_frame( fde: *const u8 ) {
     debug!( "Registering new frame: 0x{:016X}", fde as usize );
 
@@ -1112,6 +1113,7 @@ pub unsafe extern "C" fn __register_frame( fde: *const u8 ) {
 }
 
 #[cfg_attr(not(test), no_mangle)]
+#[cfg(not(feature = "disable-register-frame-hooks"))]
 pub unsafe extern "C" fn __deregister_frame( fde: *const u8 ) {
     debug!( "Deregistering new frame: 0x{:016X}", fde as usize );
 
