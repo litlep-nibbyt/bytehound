@@ -1106,7 +1106,7 @@ fn handler_allocation_groups( req: HttpRequest ) -> Result< HttpResponse > {
 
             let key_for_backtrace: HashMap< _, _ > = key_for_backtrace.into_iter().collect();
             groups.allocations_by_backtrace.par_sort_by_key( |(&backtrace_id, _)| {
-                key_for_backtrace.get( &backtrace_id ).unwrap().clone()
+                key_for_backtrace.get( &backtrace_id ).unwrap()
             });
         }
 

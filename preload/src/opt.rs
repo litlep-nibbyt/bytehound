@@ -25,6 +25,7 @@ pub struct Opts {
     pub temporary_allocation_pending_threshold: Option< usize >,
     pub track_child_processes: bool,
     pub disable_pr_set_vma_anon_name: bool,
+    pub disable_jemalloc_hooks: bool,
 }
 
 static OPTS: UnsafeCellSync< Opts > = UnsafeCellSync::new( Opts {
@@ -52,6 +53,7 @@ static OPTS: UnsafeCellSync< Opts > = UnsafeCellSync::new( Opts {
     temporary_allocation_pending_threshold: None,
     track_child_processes: false,
     disable_pr_set_vma_anon_name: false,
+    disable_jemalloc_hooks: false,
 } );
 
 trait ParseVar: Sized {
@@ -151,7 +153,9 @@ pub unsafe fn initialize() {
         "MEMORY_PROFILER_TRACK_CHILD_PROCESSES"
             => &mut opts.track_child_processes,
         "MEMORY_PROFILER_DISABLE_PR_SET_VMA_ANON_NAME"
-            => &mut opts.disable_pr_set_vma_anon_name
+            => &mut opts.disable_pr_set_vma_anon_name,
+        "MEMORY_PROFILER_DISABLE_JEMALLOC_HOOKS"
+            => &mut opts.disable_jemalloc_hooks
     }
 
     opts.is_initialized = true;

@@ -63,6 +63,7 @@ use crate::vecvec::DenseVecVec;
 use crate::reader::parse_events;
 
 #[derive(Clone, PartialEq, Eq, Default, Debug, Hash)]
+#[allow(dead_code)]
 pub struct AddressMapping {
     pub declared_address: u64,
     pub actual_address: u64,
@@ -574,7 +575,7 @@ impl Loader {
         for region in std::mem::take( &mut self.pending_address_space_maps ) {
             if region.name.contains( "libmemory_profiler" ) || region.name.contains( "libbytehound" ) {
                 if self.frame_skip_ranges.last().map( |last_range| last_range.end == region.start ).unwrap_or( false ) {
-                    let mut last_range = self.frame_skip_ranges.last_mut().unwrap();
+                    let last_range = self.frame_skip_ranges.last_mut().unwrap();
                     last_range.end = region.end;
                 } else {
                     self.frame_skip_ranges.push( region.start..region.end );

@@ -302,7 +302,7 @@ fn find_internal_syms< const N: usize >( names: &[&str; N] ) -> [usize; N] {
     unsafe {
         use goblin::elf64::header::Header;
         use goblin::elf64::section_header::SectionHeader;
-        use goblin::elf::section_header::{SHT_DYNSYM, SHT_SYMTAB};
+        use goblin::elf::section_header::{SHT_DYNSYM, SHT_SYMTAB, SHN_UNDEF};
         use goblin::elf::sym::sym64::Sym;
 
         let self_path = b"/proc/self/exe\0".as_ptr() as _;
@@ -352,6 +352,10 @@ fn find_internal_syms< const N: usize >( names: &[&str; N] ) -> [usize; N] {
             );
 
             for sym in syms {
+                if sym.st_shndx == SHN_UNDEF as usize || sym.st_value == 0 {
+                    continue;
+                }
+
                 let bytes = &strtab_bytes[ sym.st_name as usize.. ];
                 let name = &bytes[ ..bytes.iter().position( |&byte| byte == 0 ).unwrap_or( bytes.len() ) ];
                 for (target_name, output_address) in names.iter().zip( addresses.iter_mut() ) {
@@ -619,7 +623,13 @@ fn initialize_stage_1() {
     }
 
     #[cfg(target_arch = "x86_64")]
-    hook_jemalloc();
+    {
+        if crate::opt::get().disable_jemalloc_hooks {
+            warn!( "jemalloc hooks disabled via MEMORY_PROFILER_DISABLE_JEMALLOC_HOOKS" );
+        } else {
+            hook_jemalloc();
+        }
+    }
 
     #[cfg(target_arch = "x86_64")]
     hook_private_mmap();

@@ -89,6 +89,37 @@ Mac:
 
 Then open `http://localhost:8080` in your browser.
 
+### Headless server with cargo zigbuild
+
+If you prefer using `cargo zigbuild` on a headless Linux server:
+
+1. Install zig and cargo-zigbuild:
+
+        $ sudo apt-get update
+        $ sudo apt-get install -y zig
+        $ cargo install cargo-zigbuild
+
+2. Build for your target (example: x86_64 Linux):
+
+        $ CFLAGS='-std=gnu11' cargo zigbuild --release -p bytehound-preload --target x86_64-unknown-linux-gnu
+        $ CFLAGS='-std=gnu11' cargo zigbuild --release -p bytehound-cli --target x86_64-unknown-linux-gnu
+
+   For aarch64 Linux, use:
+
+        $ CFLAGS='-std=gnu11' cargo zigbuild --release -p bytehound-preload --target aarch64-unknown-linux-gnu
+        $ CFLAGS='-std=gnu11' cargo zigbuild --release -p bytehound-cli --target aarch64-unknown-linux-gnu
+
+3. Run on the server:
+
+        $ LD_PRELOAD=./target/x86_64-unknown-linux-gnu/release/libbytehound.so ./your_application
+        $ ./target/x86_64-unknown-linux-gnu/release/bytehound server --bind 127.0.0.1 memory-profiling_*.dat
+
+4. Tunnel from your Mac:
+
+        $ ssh -L 8080:127.0.0.1:8080 user@server
+
+Then open `http://localhost:8080` in your browser.
+
 ## Documentation
 
 You can find the full documentation for the profiler in our [Memory profiling for fun and profit](https://koute.github.io/bytehound/) book.

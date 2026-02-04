@@ -313,6 +313,7 @@ pub struct ResponseMaps< T: Serialize > {
 }
 
 #[derive(Serialize)]
+#[allow(dead_code)]
 pub struct ResponseMmaps< T: Serialize > {
     pub operations: T
 }
@@ -673,6 +674,7 @@ impl< 'de > serde::Deserialize< 'de > for NumberOrPercentage {
 }
 
 #[derive(Clone, PartialEq, Eq, Deserialize, Debug, Hash)]
+#[allow(dead_code)]
 pub struct MmapFilter {
     pub size_min: Option< u64 >,
     pub size_max: Option< u64 >,

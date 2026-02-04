@@ -101,6 +101,7 @@ impl fmt::Display for ReadableSize {
 }
 
 #[derive(Copy, Clone, PartialEq, Eq)]
+#[allow(dead_code)]
 pub struct ReadableAddress( pub u64 );
 
 impl fmt::Display for ReadableAddress {

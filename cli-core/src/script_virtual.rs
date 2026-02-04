@@ -2,6 +2,7 @@ use std::sync::{Arc, Weak};
 use std::collections::BTreeMap;
 use parking_lot::Mutex;
 
+#[allow(dead_code)]
 enum NodeKind {
     File( Arc< Vec< u8 > > ),
     Directory( BTreeMap< String, Arc< Node > > )

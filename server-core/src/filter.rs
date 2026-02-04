@@ -21,6 +21,7 @@ use cli_core::{
 use crate::protocol;
 
 #[derive(Clone, Debug)]
+#[allow(dead_code)]
 pub struct GroupFilter {
     pub interval_min: Option< Timestamp >,
     pub interval_max: Option< Timestamp >,
