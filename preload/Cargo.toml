@@ -28,17 +28,17 @@ fast_range_map = { path = "../fast_range_map" }
 
 [dependencies.thread-local-reentrant]
 git = "https://github.com/litlep-nibbyt/not-perf"
-rev = "8117c91"
+rev = "6c36523"
 
 [dependencies.nwind]
 git = "https://github.com/litlep-nibbyt/not-perf"
-rev = "8117c91"
+rev = "6c36523"
 features = ["log", "local-unwinding"]
 default-features = false
 
 [dependencies.perf_event_open]
 git = "https://github.com/litlep-nibbyt/not-perf"
-rev = "8117c91"
+rev = "6c36523"
 
 [dependencies.common]
 path = "../common"
