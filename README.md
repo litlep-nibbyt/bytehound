@@ -55,10 +55,7 @@
 ### Build notes (newer nightlies / GCC 15+)
 
 - If `cc` is missing, install `build-essential` (or your distro's equivalent).
-- `mimalloc` can fail under newer GCC defaults (C23) with `ATOMIC_VAR_INIT` errors; build with `CFLAGS='-std=gnu11'`, e.g.:
-
-        $ CFLAGS='-std=gnu11' cargo build --release -p bytehound-preload
-        $ CFLAGS='-std=gnu11' cargo build --release -p bytehound-cli
+- `mimalloc` can fail under newer GCC defaults (C23) with `ATOMIC_VAR_INIT` errors. This repo now forces `-std=gnu11` in `mimalloc_rust/libmimalloc-sys/build.rs` for non-MSVC compilers, so manual `CFLAGS` are usually not needed.
 
 - Recent nightly toolchains removed the `stdsimd` feature gate; older `ahash` build scripts can still try to enable `stdsimd`/`specialize`, which can fail with `unknown feature stdsimd`.
   Prefer bumping `ahash` to a newer 0.8.x release that no longer emits those cfgs.
@@ -69,10 +66,24 @@
 ### Basic usage
 
     $ export MEMORY_PROFILER_LOG=warn
+    $ export MEMORY_PROFILER_CULL_TEMPORARY_ALLOCATIONS=1
     $ LD_PRELOAD=./libbytehound.so ./your_application
     $ ./bytehound server memory-profiling_*.dat
 
 Then open your Web browser and point it at `http://localhost:8080` to access the GUI.
+
+Important: for non-trivial profiling runs, you should run with `MEMORY_PROFILER_CULL_TEMPORARY_ALLOCATIONS=1`;
+without it, `memory-profiling_*.dat` can easily become too large to load.
+
+If you want to reduce the file size further, you can post-process:
+
+    $ ./bytehound strip --threshold 60 -o stripped.dat original.dat
+
+This keeps only allocations that lived for at least 60 seconds.
+
+Or set this before profiling to raise the temporary-allocation lifetime cutoff (in milliseconds):
+
+    $ export MEMORY_PROFILER_TEMPORARY_ALLOCATION_LIFETIME_THRESHOLD=600000
 
 ### Headless server (view UI on your Mac via SSH)
 
@@ -80,6 +91,7 @@ Run the profiler and UI on the server, then tunnel to it from your Mac:
 
 Server:
 
+    $ export MEMORY_PROFILER_CULL_TEMPORARY_ALLOCATIONS=1
     $ LD_PRELOAD=./libbytehound.so ./your_application
     $ ./bytehound server --bind 127.0.0.1 memory-profiling_*.dat
 
@@ -101,18 +113,21 @@ If you prefer using `cargo zigbuild` on a headless Linux server:
 
 2. Build for your target (example: x86_64 Linux):
 
-        $ CFLAGS='-std=gnu11' cargo zigbuild --release -p bytehound-preload --target x86_64-unknown-linux-gnu
-        $ CFLAGS='-std=gnu11' cargo zigbuild --release -p bytehound-cli --target x86_64-unknown-linux-gnu
+        $ cargo zigbuild --release -p bytehound-preload --target x86_64-unknown-linux-gnu --features disable-register-frame-hooks
+        $ cargo zigbuild --release -p bytehound-cli --target x86_64-unknown-linux-gnu
 
    For aarch64 Linux, use:
 
-        $ CFLAGS='-std=gnu11' cargo zigbuild --release -p bytehound-preload --target aarch64-unknown-linux-gnu
-        $ CFLAGS='-std=gnu11' cargo zigbuild --release -p bytehound-cli --target aarch64-unknown-linux-gnu
+        $ cargo zigbuild --release -p bytehound-preload --target aarch64-unknown-linux-gnu --features disable-register-frame-hooks
+        $ cargo zigbuild --release -p bytehound-cli --target aarch64-unknown-linux-gnu
 
 3. Run on the server:
 
+        $ export MEMORY_PROFILER_CULL_TEMPORARY_ALLOCATIONS=1
         $ LD_PRELOAD=./target/x86_64-unknown-linux-gnu/release/libbytehound.so ./your_application
         $ ./target/x86_64-unknown-linux-gnu/release/bytehound server --bind 127.0.0.1 memory-profiling_*.dat
+
+   Replace `x86_64-unknown-linux-gnu` with the target triple you built (for example, `aarch64-unknown-linux-gnu`).
 
 4. Tunnel from your Mac:
 
@@ -120,11 +135,11 @@ If you prefer using `cargo zigbuild` on a headless Linux server:
 
 Then open `http://localhost:8080` in your browser.
 
-#### Zigbuild note (macOS cross-compile)
+#### Zigbuild note (`__register_frame` duplicate symbols)
 
-When cross-compiling `libbytehound.so` on macOS with `cargo zigbuild`, zig's bundled `libunwind` can conflict with Bytehound's `__register_frame`/`__deregister_frame` exports. If you hit duplicate-symbol link errors, build with:
+If `cargo zigbuild` fails with duplicate `__register_frame`/`__deregister_frame` symbols from zig's `libunwind`, build `bytehound-preload` with:
 
-        $ CFLAGS='-std=gnu11' cargo zigbuild --release -p bytehound-preload --target x86_64-unknown-linux-gnu --features disable-register-frame-hooks
+        $ cargo zigbuild --release -p bytehound-preload --target x86_64-unknown-linux-gnu --features disable-register-frame-hooks
 
 ## Documentation
 
