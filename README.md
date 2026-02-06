@@ -120,6 +120,12 @@ If you prefer using `cargo zigbuild` on a headless Linux server:
 
 Then open `http://localhost:8080` in your browser.
 
+#### Zigbuild note (macOS cross-compile)
+
+When cross-compiling `libbytehound.so` on macOS with `cargo zigbuild`, zig's bundled `libunwind` can conflict with Bytehound's `__register_frame`/`__deregister_frame` exports. If you hit duplicate-symbol link errors, build with:
+
+        $ CFLAGS='-std=gnu11' cargo zigbuild --release -p bytehound-preload --target x86_64-unknown-linux-gnu --features disable-register-frame-hooks
+
 ## Documentation
 
 You can find the full documentation for the profiler in our [Memory profiling for fun and profit](https://koute.github.io/bytehound/) book.

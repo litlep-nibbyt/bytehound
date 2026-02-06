@@ -27,18 +27,15 @@ hashbrown = "0.13"
 fast_range_map = { path = "../fast_range_map" }
 
 [dependencies.thread-local-reentrant]
-git = "https://github.com/litlep-nibbyt/not-perf"
-rev = "6c36523"
+path = "../vendor/not-perf/thread-local-reentrant"
 
 [dependencies.nwind]
-git = "https://github.com/litlep-nibbyt/not-perf"
-rev = "6c36523"
+path = "../vendor/not-perf/nwind"
 features = ["log", "local-unwinding"]
 default-features = false
 
 [dependencies.perf_event_open]
-git = "https://github.com/litlep-nibbyt/not-perf"
-rev = "6c36523"
+path = "../vendor/not-perf/perf_event_open"
 
 [dependencies.common]
 path = "../common"

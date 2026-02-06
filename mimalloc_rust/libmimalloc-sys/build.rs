@@ -44,6 +44,10 @@ fn main() {
 
     if build.get_compiler().is_like_msvc() {
         build.cpp(true);
+    } else {
+        // Newer toolchains may default to C23 where ATOMIC_VAR_INIT is removed.
+        // Mimalloc in this vendored version expects C11 atomics.
+        build.flag_if_supported("-std=gnu11");
     }
 
     build.compile("mimalloc");
