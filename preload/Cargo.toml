@@ -27,15 +27,15 @@ hashbrown = "0.13"
 fast_range_map = { path = "../fast_range_map" }
 
 [dependencies.thread-local-reentrant]
-path = "../vendor/not-perf/thread-local-reentrant"
+path = "../../not-perf/thread-local-reentrant"
 
 [dependencies.nwind]
-path = "../vendor/not-perf/nwind"
+path = "../../not-perf/nwind"
 features = ["log", "local-unwinding"]
 default-features = false
 
 [dependencies.perf_event_open]
-path = "../vendor/not-perf/perf_event_open"
+path = "../../not-perf/perf_event_open"
 
 [dependencies.common]
 path = "../common"

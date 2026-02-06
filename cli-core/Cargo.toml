@@ -34,7 +34,7 @@ lz4-compress = { path = "../lz4-compress" }
 fast_range_map = { path = "../fast_range_map" }
 
 [dependencies.nwind]
-path = "../vendor/not-perf/nwind"
+path = "../../not-perf/nwind"
 
 [dev-dependencies]
 quickcheck = "0.9"
