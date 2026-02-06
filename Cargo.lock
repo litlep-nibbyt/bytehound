@@ -1916,7 +1916,7 @@ dependencies = [
 [[package]]
 name = "nwind"
 version = "0.1.0"
-source = "git+https://github.com/litlep-nibbyt/not-perf?branch=master#5ba80b8edd5ef14cff6b8b4f606a4d607c0afc20"
+source = "git+https://github.com/litlep-nibbyt/not-perf?rev=b280fa26780cadd649de2da0ab2ee0a9f3ec908c#b280fa26780cadd649de2da0ab2ee0a9f3ec908c"
 dependencies = [
  "addr2line 0.16.0",
  "byteorder",
@@ -2065,7 +2065,7 @@ checksum = "9b4f627cb1b25917193a259e49bdad08f671f8d9708acfd5fe0a8c1455d87220"
 [[package]]
 name = "perf_event_open"
 version = "0.1.0"
-source = "git+https://github.com/litlep-nibbyt/not-perf?branch=master#5ba80b8edd5ef14cff6b8b4f606a4d607c0afc20"
+source = "git+https://github.com/litlep-nibbyt/not-perf?rev=b280fa26780cadd649de2da0ab2ee0a9f3ec908c#b280fa26780cadd649de2da0ab2ee0a9f3ec908c"
 dependencies = [
  "byteorder",
  "libc",
@@ -2202,7 +2202,7 @@ dependencies = [
 [[package]]
 name = "proc-maps"
 version = "0.1.0"
-source = "git+https://github.com/litlep-nibbyt/not-perf?branch=master#5ba80b8edd5ef14cff6b8b4f606a4d607c0afc20"
+source = "git+https://github.com/litlep-nibbyt/not-perf?rev=b280fa26780cadd649de2da0ab2ee0a9f3ec908c#b280fa26780cadd649de2da0ab2ee0a9f3ec908c"
 
 [[package]]
 name = "quick-error"
@@ -3033,7 +3033,7 @@ checksum = "144f754d318415ac792f9d69fc87abbbfc043ce2ef041c60f16ad828f638717d"
 [[package]]
 name = "thread-local-reentrant"
 version = "0.1.0"
-source = "git+https://github.com/litlep-nibbyt/not-perf?branch=master#5ba80b8edd5ef14cff6b8b4f606a4d607c0afc20"
+source = "git+https://github.com/litlep-nibbyt/not-perf?rev=b280fa26780cadd649de2da0ab2ee0a9f3ec908c#b280fa26780cadd649de2da0ab2ee0a9f3ec908c"
 dependencies = [
  "libc",
 ]
