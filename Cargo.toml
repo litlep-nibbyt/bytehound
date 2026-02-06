@@ -11,9 +11,3 @@ opt-level = 3
 lto = true
 panic = "abort"
 debug = true
-
-[patch."https://github.com/litlep-nibbyt/not-perf"]
-nwind = { path = "../not-perf/nwind" }
-perf_event_open = { path = "../not-perf/perf_event_open" }
-proc-maps = { path = "../not-perf/proc-maps" }
-thread-local-reentrant = { path = "../not-perf/thread-local-reentrant" }
