@@ -9,8 +9,8 @@ pub fn fatal_error( args: std::fmt::Arguments ) -> ! {
         .build();
 
     unsafe {
-        crate::init::SYSCALL_LOGGER.log( &record );
-        crate::init::FILE_LOGGER.log( &record );
+        (&*crate::init::SYSCALL_LOGGER.get()).log( &record );
+        (&*crate::init::FILE_LOGGER.get()).log( &record );
     }
 
     panic!();

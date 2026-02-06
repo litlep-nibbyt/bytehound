@@ -227,7 +227,7 @@ pub fn deregister_frame_by_pointer( fde: *const u8 ) {
     AS.write().unwrap().unregister_fde_from_pointer( fde )
 }
 
-static mut PERF: Option< SpinLock< Perf > > = None;
+static PERF: crate::utils::UnsafeCellSync< Option< SpinLock< Perf > > > = crate::utils::UnsafeCellSync::new( None );
 
 pub fn prepare_to_start_unwinding() {
     static FLAG: SpinLock< bool > = SpinLock::new( false );
@@ -241,7 +241,7 @@ pub fn prepare_to_start_unwinding() {
         return;
     }
 
-    if unsafe { PERF.is_some() } {
+    if unsafe { (*PERF.get()).is_some() } {
         return;
     }
 
@@ -253,7 +253,7 @@ pub fn prepare_to_start_unwinding() {
     match perf {
         Ok( perf ) => {
             unsafe {
-                PERF = Some( SpinLock::new( perf ) );
+                *PERF.get() = Some( SpinLock::new( perf ) );
             }
         },
         Err( error ) => {
@@ -375,7 +375,7 @@ fn grab_with_unwind_state( unwind_state: &mut ThreadUnwindState ) -> Backtrace {
     let unwind_ctx = &mut unwind_state.unwind_ctx;
 
     let address_space = unsafe {
-        if let Some( ref perf ) = PERF {
+        if let Some( ref perf ) = *PERF.get() {
             reload_if_necessary_perf_event_open( perf )
         } else {
             reload_if_necessary_dl_iterate_phdr( &mut unwind_state.last_dl_state )

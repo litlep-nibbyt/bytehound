@@ -1,3 +1,4 @@
+use std::cell::UnsafeCell;
 use std::io::{self, Read, Write};
 use std::fs::File;
 use std::fmt;
@@ -10,6 +11,21 @@ use std::os::unix::ffi::OsStrExt;
 
 use crate::{EXECUTABLE, PID};
 use crate::syscall;
+
+pub struct UnsafeCellSync<T>(UnsafeCell<T>);
+
+unsafe impl<T> Sync for UnsafeCellSync<T> {}
+
+impl<T> UnsafeCellSync<T> {
+    pub const fn new(value: T) -> Self {
+        Self(UnsafeCell::new(value))
+    }
+
+    #[inline]
+    pub fn get(&self) -> *mut T {
+        self.0.get()
+    }
+}
 
 pub fn read_file( path: &str ) -> io::Result< Vec< u8 > > {
     let mut fp = File::open( path )?;

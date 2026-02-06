@@ -444,11 +444,11 @@ trait List: Sized + Send + Sync {
         self.unfiltered_ids_ref().map( |map_ids| map_ids.as_slice() ).unwrap_or_else( || Self::default_unfiltered_ids( &self.data_ref() ) )
     }
 
-    fn unfiltered_ids_iter( &self ) -> std::iter::Copied< std::slice::Iter< Self::Id > > {
+    fn unfiltered_ids_iter( &self ) -> std::iter::Copied< std::slice::Iter< '_, Self::Id > > {
         self.unfiltered_ids().iter().copied()
     }
 
-    fn unfiltered_ids_par_iter( &self ) -> rayon::iter::Copied< rayon::slice::Iter< Self::Id > > {
+    fn unfiltered_ids_par_iter( &self ) -> rayon::iter::Copied< rayon::slice::Iter< '_, Self::Id > > {
         self.unfiltered_ids().par_iter().copied()
     }
 
@@ -2004,6 +2004,7 @@ impl Engine {
         use rhai::packages::Package;
 
         let mut engine = rhai::Engine::new_raw();
+
         engine.register_global_module( rhai::packages::ArithmeticPackage::new().as_shared_module() );
         engine.register_global_module( rhai::packages::BasicArrayPackage::new().as_shared_module() );
         engine.register_global_module( rhai::packages::BasicFnPackage::new().as_shared_module() );
@@ -2045,19 +2046,19 @@ impl Engine {
 
         {
             let env = env.clone();
-            engine.register_result_fn( "mkdir_p", move |path: &str| env.lock().mkdir_p( path ) );
+            engine.register_fn( "mkdir_p", move |path: &str| env.lock().mkdir_p( path ) );
         }
         {
             let env = env.clone();
-            engine.register_result_fn( "chdir", move |path: &str| env.lock().chdir( path ) );
+            engine.register_fn( "chdir", move |path: &str| env.lock().chdir( path ) );
         }
         {
             let env = env.clone();
-            engine.register_result_fn( "exit", move |errorcode: i64| env.lock().exit( Some( errorcode as i32 ) ) );
+            engine.register_fn( "exit", move |errorcode: i64| env.lock().exit( Some( errorcode as i32 ) ) );
         }
         {
             let env = env.clone();
-            engine.register_result_fn( "exit", move || env.lock().exit( None ) );
+            engine.register_fn( "exit", move || env.lock().exit( None ) );
         }
 
         // DSL functions.
@@ -2070,11 +2071,11 @@ impl Engine {
         engine.register_type::< Backtrace >();
         engine.register_type::< Graph >();
         engine.register_fn( "graph", Graph::new );
-        engine.register_result_fn( "add", Graph::add );
-        engine.register_result_fn( "add", Graph::add_with_label );
-        engine.register_result_fn( "add", Graph::add_group );
-        engine.register_result_fn( "add", Graph::add_maps );
-        engine.register_result_fn( "add", Graph::add_maps_with_label );
+        engine.register_fn( "add", Graph::add );
+        engine.register_fn( "add", Graph::add_with_label );
+        engine.register_fn( "add", Graph::add_group );
+        engine.register_fn( "add", Graph::add_maps );
+        engine.register_fn( "add", Graph::add_maps_with_label );
         engine.register_fn( "trim_left", Graph::trim_left );
         engine.register_fn( "trim_right", Graph::trim_right );
         engine.register_fn( "trim", Graph::trim );
@@ -2084,14 +2085,14 @@ impl Engine {
         engine.register_fn( "without_legend", Graph::without_legend );
         engine.register_fn( "without_axes", Graph::without_axes );
         engine.register_fn( "without_grid", Graph::without_grid );
-        engine.register_result_fn( "show_memory_usage", Graph::show_memory_usage );
-        engine.register_result_fn( "show_live_allocations", Graph::show_live_allocations );
-        engine.register_result_fn( "show_new_allocations", Graph::show_new_allocations );
-        engine.register_result_fn( "show_deallocations", Graph::show_deallocations );
-        engine.register_result_fn( "show_rss", Graph::show_rss );
-        engine.register_result_fn( "show_address_space", Graph::show_address_space );
+        engine.register_fn( "show_memory_usage", Graph::show_memory_usage );
+        engine.register_fn( "show_live_allocations", Graph::show_live_allocations );
+        engine.register_fn( "show_new_allocations", Graph::show_new_allocations );
+        engine.register_fn( "show_deallocations", Graph::show_deallocations );
+        engine.register_fn( "show_rss", Graph::show_rss );
+        engine.register_fn( "show_address_space", Graph::show_address_space );
 
-        engine.register_result_fn( "with_gradient_color_scheme", Graph::with_gradient_color_scheme );
+        engine.register_fn( "with_gradient_color_scheme", Graph::with_gradient_color_scheme );
         engine.register_fn( "allocations", DataRef::allocations );
         engine.register_fn( "maps", DataRef::maps );
         engine.register_fn( "runtime", |data: &mut DataRef| Duration( data.0.last_timestamp - data.0.initial_timestamp ) );
@@ -2294,7 +2295,7 @@ impl Engine {
         engine.register_fn( "sort_by_count_descending", AllocationGroupList::sort_by_count_descending );
         engine.register_fn( "sort_by_count", AllocationGroupList::sort_by_count_descending );
         engine.register_fn( "ungroup", AllocationGroupList::ungroup );
-        engine.register_indexer_get_result( AllocationGroupList::get );
+        engine.register_indexer_get( AllocationGroupList::get );
         engine.register_fn( "take", AllocationGroupList::take );
         engine.register_iterator::< AllocationGroupList >();
 
@@ -2354,7 +2355,7 @@ impl Engine {
 
         {
             let data = args.data.clone();
-            engine.register_result_fn( "data", move || {
+            engine.register_fn( "data", move || {
                 if let Some( ref data ) = data {
                     Ok( DataRef( data.clone() ) )
                 } else {
@@ -2366,7 +2367,7 @@ impl Engine {
         {
             let data = args.data.clone();
             let allocation_ids = args.allocation_ids.clone();
-            engine.register_result_fn( "allocations", move || {
+            engine.register_fn( "allocations", move || {
                 if let Some( ref data ) = data {
                     Ok( AllocationList {
                         data: DataRef( data.clone() ),
@@ -2382,7 +2383,7 @@ impl Engine {
         {
             let data = args.data.clone();
             let map_ids = args.map_ids.clone();
-            engine.register_result_fn( "maps", move || {
+            engine.register_fn( "maps", move || {
                 if let Some( ref data ) = data {
                     Ok( MapList {
                         data: DataRef( data.clone() ),
@@ -2397,12 +2398,15 @@ impl Engine {
 
         {
             let env = env.clone();
-            engine.register_result_fn( "load", move |path: String| Ok( DataRef( env.lock().load( path )? ) ) );
+            engine.register_fn::< _, 1, false, DataRef, true >(
+                "load",
+                move |path: String| Ok( DataRef( env.lock().load( path )? ) )
+            );
         }
 
         {
             let env = env.clone();
-            engine.register_result_fn(
+            engine.register_fn::< _, 2, false, Graph, true >(
                 "save",
                 move |graph: &mut Graph, path: String| Graph::save( graph, &mut *env.lock(), path )
             );
@@ -2410,42 +2414,42 @@ impl Engine {
         {
             let env = env.clone();
             let graph_counter = graph_counter.clone();
-            engine.register_result_fn(
+            engine.register_fn::< _, 1, false, Graph, true >(
                 "save",
                 move |graph: &mut Graph| Graph::save( graph, &mut *env.lock(), format!( "Graph #{}.svg", get_counter( &graph_counter ) ) )
             );
         }
         {
             let env = env.clone();
-            engine.register_result_fn(
+            engine.register_fn::< _, 2, false, Graph, true >(
                 "save_each_series_as_graph",
                 move |graph: &mut Graph, path: String| Graph::save_each_series_as_graph( graph, &mut *env.lock(), path )
             );
         }
         {
             let env = env.clone();
-            engine.register_result_fn(
+            engine.register_fn::< _, 1, false, Graph, true >(
                 "save_each_series_as_graph",
                 move |graph: &mut Graph| Graph::save_each_series_as_graph( graph, &mut *env.lock(), ".".into() )
             );
         }
         {
             let env = env.clone();
-            engine.register_result_fn(
+            engine.register_fn::< _, 2, false, Graph, true >(
                 "save_each_series_as_flamegraph",
                 move |graph: &mut Graph, path: String| Graph::save_each_series_as_flamegraph( graph, &mut *env.lock(), path )
             );
         }
         {
             let env = env.clone();
-            engine.register_result_fn(
+            engine.register_fn::< _, 1, false, Graph, true >(
                 "save_each_series_as_flamegraph",
                 move |graph: &mut Graph| Graph::save_each_series_as_flamegraph( graph, &mut *env.lock(), ".".into() )
             );
         }
         {
             let env = env.clone();
-            engine.register_result_fn(
+            engine.register_fn(
                 "save_as_flamegraph",
                 move |list: &mut AllocationList, path: String| AllocationList::save_as_flamegraph( list, &mut *env.lock(), path )
             );
@@ -2453,14 +2457,14 @@ impl Engine {
         {
             let env = env.clone();
             let flamegraph_counter = flamegraph_counter.clone();
-            engine.register_result_fn(
+            engine.register_fn(
                 "save_as_flamegraph",
                 move |list: &mut AllocationList| AllocationList::save_as_flamegraph( list, &mut *env.lock(), format!( "Flamegraph #{}.svg", get_counter( &flamegraph_counter ) ) )
             );
         }
         {
             let env = env.clone();
-            engine.register_result_fn(
+            engine.register_fn(
                 "save_as_graph",
                 move |list: &mut AllocationList, path: String| AllocationList::save_as_graph( list, &mut *env.lock(), path )
             );
@@ -2468,7 +2472,7 @@ impl Engine {
         {
             let env = env.clone();
             let graph_counter = graph_counter.clone();
-            engine.register_result_fn(
+            engine.register_fn(
                 "save_as_graph",
                 move |list: &mut AllocationList| AllocationList::save_as_graph( list, &mut *env.lock(), format!( "Graph #{}.svg", get_counter( &graph_counter ) ) )
             );
@@ -2496,7 +2500,7 @@ impl Engine {
 
         {
             let env = env.clone();
-            engine.register_result_fn(
+            engine.register_fn::< _, 2, false, (), true >(
                 "println",
                 move |a0: rhai::plugin::Dynamic, a1: rhai::plugin::Dynamic| {
                     let a0 = to_string( a0 );
@@ -2510,7 +2514,7 @@ impl Engine {
 
         {
             let env = env.clone();
-            engine.register_result_fn(
+            engine.register_fn::< _, 3, false, (), true >(
                 "println",
                 move |a0: rhai::plugin::Dynamic, a1: rhai::plugin::Dynamic, a2: rhai::plugin::Dynamic| {
                     let a0 = to_string( a0 );
@@ -2525,7 +2529,7 @@ impl Engine {
 
         {
             let env = env.clone();
-            engine.register_result_fn(
+            engine.register_fn::< _, 4, false, (), true >(
                 "println",
                 move |a0: rhai::plugin::Dynamic, a1: rhai::plugin::Dynamic, a2: rhai::plugin::Dynamic, a3: rhai::plugin::Dynamic| {
                     let a0 = to_string( a0 );
@@ -2541,38 +2545,38 @@ impl Engine {
 
         macro_rules! register_list {
             ($ty_name:ident) => {{
-                engine.register_result_fn( "+", $ty_name::rhai_merge );
-                engine.register_result_fn( "-", $ty_name::rhai_substract );
-                engine.register_result_fn( "&", $ty_name::rhai_intersect );
+                engine.register_fn( "+", $ty_name::rhai_merge );
+                engine.register_fn( "-", $ty_name::rhai_substract );
+                engine.register_fn( "&", $ty_name::rhai_intersect );
                 engine.register_fn( "len", $ty_name::len );
-                engine.register_indexer_get_result( $ty_name::rhai_get );
+                engine.register_indexer_get( $ty_name::rhai_get );
 
-                engine.register_result_fn( "only_passing_through_function", |list: &mut $ty_name, regex: String| {
+                engine.register_fn::< _, 2, false, $ty_name, true >( "only_passing_through_function", |list: &mut $ty_name, regex: String| {
                     let regex = regex::Regex::new( &regex ).map_err( |error| Box::new( rhai::EvalAltResult::from( format!( "failed to compile regex: {}", error ) ) ) )?;
                     Ok( list.add_filter_once( |filter| filter.backtrace_filter.only_passing_through_function.is_some(), |filter|
                         filter.backtrace_filter.only_passing_through_function = Some( regex )
                     ))
                 });
-                engine.register_result_fn( "only_not_passing_through_function", |list: &mut $ty_name, regex: String| {
+                engine.register_fn::< _, 2, false, $ty_name, true >( "only_not_passing_through_function", |list: &mut $ty_name, regex: String| {
                     let regex = regex::Regex::new( &regex ).map_err( |error| Box::new( rhai::EvalAltResult::from( format!( "failed to compile regex: {}", error ) ) ) )?;
                     Ok( list.add_filter_once( |filter| filter.backtrace_filter.only_not_passing_through_function.is_some(), |filter|
                         filter.backtrace_filter.only_not_passing_through_function = Some( regex )
                     ))
                 });
-                engine.register_result_fn( "only_passing_through_source", |list: &mut $ty_name, regex: String| {
+                engine.register_fn::< _, 2, false, $ty_name, true >( "only_passing_through_source", |list: &mut $ty_name, regex: String| {
                     let regex = regex::Regex::new( &regex ).map_err( |error| Box::new( rhai::EvalAltResult::from( format!( "failed to compile regex: {}", error ) ) ) )?;
                     Ok( list.add_filter_once( |filter| filter.backtrace_filter.only_passing_through_source.is_some(), |filter|
                         filter.backtrace_filter.only_passing_through_source = Some( regex )
                     ))
                 });
-                engine.register_result_fn( "only_not_passing_through_source", |list: &mut $ty_name, regex: String| {
+                engine.register_fn::< _, 2, false, $ty_name, true >( "only_not_passing_through_source", |list: &mut $ty_name, regex: String| {
                     let regex = regex::Regex::new( &regex ).map_err( |error| Box::new( rhai::EvalAltResult::from( format!( "failed to compile regex: {}", error ) ) ) )?;
                     Ok( list.add_filter_once( |filter| filter.backtrace_filter.only_not_passing_through_source.is_some(), |filter|
                         filter.backtrace_filter.only_not_passing_through_source = Some( regex )
                     ))
                 });
 
-                engine.register_result_fn( "only_matching_backtraces", |list: &mut $ty_name, ids: rhai::Dynamic| {
+                engine.register_fn::< _, 2, false, $ty_name, true >( "only_matching_backtraces", |list: &mut $ty_name, ids: rhai::Dynamic| {
                     let mut set = HashSet::new();
                     gather_backtrace_ids( &mut set, ids )?;
 
@@ -2594,7 +2598,7 @@ impl Engine {
                     }) )
                 });
 
-                engine.register_result_fn( "only_not_matching_backtraces", |list: &mut $ty_name, ids: rhai::Dynamic| {
+                engine.register_fn::< _, 2, false, $ty_name, true >( "only_not_matching_backtraces", |list: &mut $ty_name, ids: rhai::Dynamic| {
                     let mut set = HashSet::new();
                     gather_backtrace_ids( &mut set, ids )?;
 
@@ -2603,7 +2607,7 @@ impl Engine {
                     }))
                 });
 
-                engine.register_result_fn( "only_matching_deallocation_backtraces", |list: &mut $ty_name, ids: rhai::Dynamic| {
+                engine.register_fn::< _, 2, false, $ty_name, true >( "only_matching_deallocation_backtraces", |list: &mut $ty_name, ids: rhai::Dynamic| {
                     let mut set = HashSet::new();
                     gather_backtrace_ids( &mut set, ids )?;
 
@@ -2616,7 +2620,7 @@ impl Engine {
                     }))
                 });
 
-                engine.register_result_fn( "only_not_matching_deallocation_backtraces", |list: &mut $ty_name, ids: rhai::Dynamic| {
+                engine.register_fn::< _, 2, false, $ty_name, true >( "only_not_matching_deallocation_backtraces", |list: &mut $ty_name, ids: rhai::Dynamic| {
                     let mut set = HashSet::new();
                     gather_backtrace_ids( &mut set, ids )?;
 
@@ -2646,7 +2650,7 @@ impl Engine {
                 register_filter!( $ty_name, common_filter.only_leaked, bool );
                 register_filter!( $ty_name, common_filter.only_temporary, bool );
 
-                engine.register_result_fn( "only_alive_at", |list: &mut $ty_name, xs: rhai::Array| -> Result< $ty_name, Box< rhai::EvalAltResult > > {
+                engine.register_fn::< _, 2, false, $ty_name, true >( "only_alive_at", |list: &mut $ty_name, xs: rhai::Array| -> Result< $ty_name, Box< rhai::EvalAltResult > > {
                     let mut xs_cast = Vec::new();
                     for value in xs {
                         if let Some( value ) = value.clone().try_cast::< Duration >() {
@@ -2661,7 +2665,7 @@ impl Engine {
             }};
         }
 
-        engine.register_result_fn( "only_from_maps", |list: &mut AllocationList, ids: rhai::Dynamic| {
+        engine.register_fn::< _, 2, false, AllocationList, true >( "only_from_maps", |list: &mut AllocationList, ids: rhai::Dynamic| {
             let mut set = HashSet::new();
             gather_map_ids( &mut set, ids )?;
 

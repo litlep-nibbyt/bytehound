@@ -53,6 +53,9 @@ macro_rules! warning {
 // TODO: split main functions and remove following allow.
 #[allow(clippy::cognitive_complexity)]
 fn main() {
+    println!("cargo:rustc-check-cfg=cfg(prefixed)");
+    println!("cargo:rustc-check-cfg=cfg(jemallocator_docs)");
+
     let target = env::var("TARGET").expect("TARGET was not set");
     let host = env::var("HOST").expect("HOST was not set");
     let num_jobs = env::var("NUM_JOBS").expect("NUM_JOBS was not set");
