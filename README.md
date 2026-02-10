@@ -44,13 +44,20 @@
 
 ## Building
 
-1. Install GCC, Rust nightly (**only 1.62 or newer is supported**) and the Yarn package manager (for building the GUI)
+1. Install GCC, Rust nightly (this repository is currently pinned to `nightly-2025-11-26` via `rust-toolchain`) and the Yarn package manager (for building the GUI)
 2. Build it:
 
         $ cargo build --release -p bytehound-preload
         $ cargo build --release -p bytehound-cli
 
 3. Grab the binaries from `target/release/libbytehound.so` and `target/release/bytehound`
+
+### `not-perf` dependency pinning
+
+This repository pins the `nwind`, `perf_event_open`, and `thread-local-reentrant`
+crates to a specific `not-perf` commit via `git` + `rev`.
+For this workspace migration run, the URL is:
+`https://github.com/litlep-nibbyt/not-perf.git`.
 
 ## Usage
 

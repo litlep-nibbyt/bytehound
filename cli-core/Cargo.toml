@@ -34,8 +34,8 @@ lz4-compress = { path = "../lz4-compress" }
 fast_range_map = { path = "../fast_range_map" }
 
 [dependencies.nwind]
-git = "https://github.com/koute/not-perf.git"
-rev = "911723c"
+git = "https://github.com/litlep-nibbyt/not-perf.git"
+rev = "a0ac4653b26b1e142b9b17e4082b888ec2089631"
 
 [dev-dependencies]
 quickcheck = "0.9"
