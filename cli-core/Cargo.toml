@@ -35,7 +35,7 @@ fast_range_map = { path = "../fast_range_map" }
 
 [dependencies.nwind]
 git = "https://github.com/litlep-nibbyt/not-perf.git"
-rev = "a0ac4653b26b1e142b9b17e4082b888ec2089631"
+rev = "f71c889e71f76ebf81fb407ec5385b570dcafc84"
 
 [dev-dependencies]
 quickcheck = "0.9"
